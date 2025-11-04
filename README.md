@@ -26,3 +26,9 @@ C:\Users\nano4\anaconda3\Library\bin
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser 입력후 질문뜨면 y 입력  
 이후 conda activate walkvideo 입력후 (walkvideo) PS C:\Users\nano4> 이런식으로 출력되면 설정완료  
 pip install fastapi uvicorn qdrant-client numpy opencv-python scikit-learn 설치  
+
+Qdrant 서버 설치 방법
+1️⃣ Docker Desktop 설치
+👉 https://www.docker.com/products/docker-desktop/
+
+Download for Windows – AMD64 설
