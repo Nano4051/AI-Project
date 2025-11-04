@@ -23,4 +23,5 @@ C:\Users\nano4\anaconda3\Library\bin
 오른쪽 클릭 → “관리자 권한으로 실행”  
   
 2️⃣ 아래 명령어 입력  
-Set-ExecutionPolicy RemoteSigned -Scope CurrentUser  
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser 입력후 질문뜨면 y 입력  
+이후 conda activate walkvideo 입력후 (walkvideo) PS C:\Users\nano4> 이런식으로 출력되면 설정완료  
