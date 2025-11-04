@@ -31,4 +31,11 @@ Qdrant 서버 설치 방법
 1️⃣ Docker Desktop 설치
 👉 https://www.docker.com/products/docker-desktop/
 
-Download for Windows – AMD64 설
+Download for Windows – AMD64 설치
+설치후 로그인 스킵하고 이후 파워셸에서 wsl --update 입력  
+
+PowerShell을 열고, 아까 만든 가상환경은 꺼도 됩니다.
+아래 명령어 한 줄을 입력하세요 👇
+
+docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant  
+
