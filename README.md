@@ -50,11 +50,11 @@ docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant
 먼저 작업할 경로를 정하세요. 예를 들어 C:\ai\walkvideo 라고 하겠습니다.
 PowerShell에서 입력 👇
 
-cd C:\
-mkdir ai
-cd ai
-mkdir walkvideo
-cd walkvideo
+cd C:\  
+mkdir ai  
+cd ai  
+mkdir walkvideo  
+cd walkvideo  
 
 🐍 2️⃣ Conda 가상환경 활성화
 
