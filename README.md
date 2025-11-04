@@ -39,3 +39,36 @@ PowerShell을 열고, 아까 만든 가상환경은 꺼도 됩니다.
 
 docker run -p 6333:6333 -p 6334:6334 qdrant/qdrant  
 
+🌐 확인 방법 (지금 바로 해보세요)
+
+웹브라우저 주소창에 입력 👇
+👉 http://localhost:6333/dashboard
+
+프로젝트 생성
+🧩 1️⃣ 폴더 구조 만들기
+
+먼저 작업할 경로를 정하세요. 예를 들어 C:\ai\walkvideo 라고 하겠습니다.
+PowerShell에서 입력 👇
+
+cd C:\
+mkdir ai
+cd ai
+mkdir walkvideo
+cd walkvideo
+
+🐍 2️⃣ Conda 가상환경 활성화
+
+이미 (walkvideo) 환경이 있으니, 아래 명령으로 진입하세요 👇
+
+conda activate walkvideo
+
+
+프롬프트 앞에 (walkvideo) 가 뜨면 성공 ✅
+
+📦 3️⃣ 필수 라이브러리 설치
+
+이제 Qdrant, FastAPI, OpenCV, Scikit-learn 등을 설치합니다 👇
+
+pip install fastapi uvicorn qdrant-client numpy opencv-python scikit-learn
+
+
