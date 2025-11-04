@@ -17,3 +17,10 @@ C:\Users\nano4\anaconda3
 C:\Users\nano4\anaconda3\Scripts  
 C:\Users\nano4\anaconda3\Library\bin  
 환경변수에 추가가 되었으면 PowerShell을 켜서 conda init powershell 실행후 창 닫기  
+만약에 파워셸에서 보안 관련 오류메시지 출력될때  
+1️⃣ PowerShell을 관리자 권한으로 실행  
+시작 메뉴 → “PowerShell” 검색 →  
+오른쪽 클릭 → “관리자 권한으로 실행”  
+  
+2️⃣ 아래 명령어 입력  
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser  
