@@ -71,4 +71,64 @@ conda activate walkvideo
 
 pip install fastapi uvicorn qdrant-client numpy opencv-python scikit-learn
 
+vscode 터미널 재 실행후 New-Item main.py -ItemType File 입력
+
+main.py 예시
+# backend/main.py
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+# React (프론트엔드)와의 통신 허용
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # React 실행 포트
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+def read_root():
+    return {"message": "Hello from FastAPI!"}
+
+@app.get("/api/video-data")
+def get_video_data():
+    return {"frame_count": 100, "status": "analyzing"}
+==========================================================
+새 터미널추가 npx create-react-app frontend 입력 후
+cd frontend
+npm start   입력
+
+App.js 예시
+import React, { useEffect, useState } from "react";
+
+function App() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/video-data")
+      .then(res => res.json())
+      .then(data => setData(data))
+      .catch(err => console.error(err));
+  }, []);
+
+  return (
+    <div style={{ textAlign: "center", marginTop: "50px" }}>
+      <h1>WalkVideo 프로젝트</h1>
+      {data ? (
+        <p>📹 프레임 수: {data.frame_count}, 상태: {data.status}</p>
+      ) : (
+        <p>로딩 중...</p>
+      )}
+    </div>
+  );
+}
+
+export default App;
+==========================================================
+
+파이썬 터미널에서 backend로 디렉토리 변경후 uvicorn main:app --reload 입력
+
 
