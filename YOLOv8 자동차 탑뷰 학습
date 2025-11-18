@@ -1,0 +1,143 @@
+1. 작업 폴더 내 기본적인 준비
+dataset/
+ ├── images/
+ │     ├── train/
+ │     ├── val/
+ │     └── test/   (선택)
+ └── labels/
+       ├── train/
+       ├── val/
+       └── test/   (선택)
+videos/
+data.yaml
+
+- image와 label은 어디서 구하나요? : Roboflow에 있는 샘플 데이터를 사용해보세요.(https://roboflow.com/), 사용법은 챗지피티에 물어보는걸 추천
+- data.yaml : Roboflow의 샘플 데이터에 image, label과 같이 있음(아래 코드는 참고용임. 그대로 쓰면 안됨)
+train: dataset/images/train
+val: dataset/images/val
+test: dataset/images/test
+
+nc: 1
+names: ['car']
+
+roboflow:
+  workspace: kmj-6izdm
+  project: car-top-view-xxfzv
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/kmj-6izdm/car-top-view-xxfzv/dataset/1
+
+2. YOLOv8 설치
+vscode 터미널에서 : pip install ultralytics
+
+3. 학습코드 실행
+yolo detect train model=yolov8n.pt data=data.yaml epochs=100 imgsz=640
+
+4. 학습이 완료되면 다음과 같은 결과가 나와야함
+runs/
+ ├── train/
+ │    └── weights/
+ │         ├── best.pt
+ │         ├── last.pt
+ └── detect/
+
+5. 작성자가 사용한 최종학습코드(그대로 사용하지 마세요)
+yolo detect predict model=runs/detect/train7/weights/best.pt source=videos/video_preview_h264.mp4
+
+6. 학습이 안되면 다음을 확인할 것
+(1) data.yaml의 경로와 실제 경로 일치여부 확인
+(2) label.txt 내부의 양식 오류 : 0 0.5 0.4 0.2 0.1(이 양식으로 있어야 함) -> 솔직히 이걸 일일이 찾는건 힘들 수 있으니 후순위로 생각해도 
+(3) train / val 이미지개수와 라벨개수 불일치
+(4) 작업경로에 한글있으면 안됨
+
+7. 객체 인식 정밀도를 높이고 싶어요.
+(1) 비디오의 해상도를 높이자.
+yolo detect predict model=runs/detect/train7/weights/best.pt source=videos/video_preview_h264.mp4 imgsz=1280
+
+(2) NMS 기준 조절
+yolo detect predict model=runs/detect/train7/weights/best.pt source=videos/video_preview_h264.mp4 iou=0.3
+
+(3) 학습 데이터량을 더 늘리자(기존 120개 -> 300개 이상)
+
+위의 방법을 종합하여 입력할 코드
+yolo detect predict model=runs/detect/train7/weights/best.pt source=videos/video_preview_h264.mp4 imgsz=1280 conf=0.25 iou=0.3 save=True save_txt=True
+| 옵션              | 의미                                |
+| --------------- | --------------------------------- |
+| `imgsz=1280`    | 입력 해상도를 높여 작은 차를 더 잘 탐지           |
+| `conf=0.25`     | 신뢰도 25% 이상만 출력 (작은 객체 놓치지 않도록 낮춤) |
+| `iou=0.3`       | NMS IoU를 낮춰 서로 붙은 작은 차를 합치지 않음    |
+| `save=True`     | 탐지 결과 비디오 저장 (원본 MP4이면 MP4로 저장)   |
+| `save_txt=True` | 각 객체 bbox 좌표 TXT 파일로 저장           |
+
+- 위 코드로 해도 mp4로 저장이 안될 수도 있음
+- 위 코드로 실행해도 인식이 잘 안되면 옵션값을 조절하면 됨
+
+8. 더 큰 정밀도로 맞추고 싶어요.
+- 슬라이딩 윈도우를 써라. 단 작업시간이 겁나 길기 때문에 비추천
+
+from ultralytics import YOLO
+import cv2
+import numpy as np
+
+# 모델 로드
+model = YOLO("runs/detect/train7/weights/best.pt")
+
+# 입력/출력 영상 경로
+video_path = "videos/vecteezy_time-lapse-of-parking-lot-of-shopping-center-filled-with_43486929.mp4"
+out_path = "predict_patch.mp4"
+
+# 영상 열기
+cap = cv2.VideoCapture(video_path)
+fps = cap.get(cv2.CAP_PROP_FPS)
+width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+out_video = cv2.VideoWriter(out_path, fourcc, fps, (width, height))
+
+# 슬라이딩 윈도우 설정
+patch_size = 960   # 윈도우 크기
+stride = 480       # 겹치는 거리
+
+# 영상 프레임 처리
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    h, w = frame.shape[:2]
+    bboxes_all = []
+
+    # 슬라이딩 윈도우
+    for y in range(0, h, stride):
+        for x in range(0, w, stride):
+            patch = frame[y:min(y+patch_size, h), x:min(x+patch_size, w)]
+            results = model(patch, imgsz=640, conf=0.15, iou=0.15, augment=True)
+            
+            # patch bbox → 원본 좌표 변환
+            for r in results:
+                for box in r.boxes.xyxy.cpu().numpy():
+                    x1, y1, x2, y2 = box
+                    bboxes_all.append([int(x1)+x, int(y1)+y, int(x2)+x, int(y2)+y])
+
+    # NMS 적용
+    if bboxes_all:
+        boxes = np.array(bboxes_all).tolist()
+        scores = [1.0]*len(boxes)
+        indices = cv2.dnn.NMSBoxes(boxes, scores, score_threshold=0.01, nms_threshold=0.15)
+        
+        if indices is not None:
+            # OpenCV 버전마다 indices 구조가 다를 수 있으므로 flatten
+            indices = indices.flatten()  
+            for i in indices:
+                x1, y1, x2, y2 = boxes[i]
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0,255,0), 2)
+
+    # 출력 영상에 쓰기
+    out_video.write(frame)
+
+cap.release()
+out_video.release()
+print(f"슬라이딩 윈도우 기반 탐지 완료! 출력: {out_path}")
+
+위 코드 입력 후 터미널에 실행코드 입력(참고만 하세요)
+yolo detect predict model=runs/detect/train7/weights/best.pt source=videos/vecteezy_time-lapse-of-parking-lot-of-shopping-center-filled-with_43486929.mp4 imgsz=1920 conf=0.15 iou=0.15 augment=True save=True save_txt=True
