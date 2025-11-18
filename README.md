@@ -6,7 +6,7 @@
 WBS             https://1drv.ms/x/c/10027babd671489a/Edcso3DSHfZMiXSZbzc9ZzwB7PF1eTDFKOeJoVJyIX9GWQ?e=TEsbdX  
 PPT             https://1drv.ms/p/c/10027babd671489a/Ech8dtK3iTxOtZouzubr_tABC-OaMHIOIUOncu_30n3Rtw?e=paaF4L  
 
-#개발 환경 구축(vscode,anaconda3(AI),Qdrant(DB),react(Front),Python(Back))  
+#개발 환경 구축(vscode,miniconda3,yolo8,react(Front),Python3.13)  
 Anaconda 3 설치 설치옵션 Register Anaconda as default Python 아나콘다 네비게이터 에서 vscode 런치
 VSCode에서 Ctrl + Shift + P → “Python: Select Interpreter” 검색 후 Python 3.13.5(base)이런식으로 검색창 아래 뜨면 conda환경 감지성공 (만약에 다르면 GPT 서치해보기)  
 vscode 실행후 Ctrl + `로 터미널 창을 띄운 후 conda --version입력 해서 버전 뜨면 정상인식 안뜨면 GPT 서치  
