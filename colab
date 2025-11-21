@@ -1,0 +1,33 @@
+colab에서 욜로 학습
+
+1. 새 노트북 생성 (런타임 유형 t4 gpu 로 변경)
+
+2. 학습할 파일 업로드 (zip 파일 업로드)
+ - colab에서 실행
+    from google.colab import files
+    uploaded = files.upload()
+
+3. 업로드 한 zip 파일 압축 풀기 (colab 왼쪽 파일에 dataset으로 풀린 거 볼 수 있음)
+ - colab에서 실행
+    !unzip cars.zip -d ./dataset
+
+4. 욜로 설치 안되어 있으면 설치
+ - colab
+    !pip install ultralytics
+
+5. yolo 불러서 학습 시키기
+ - colab
+    from ultralytics import YOLO
+
+    model = YOLO("yolov8n.pt")
+
+    model.train(
+        data="dataset/data.yaml",  # 방금 압축 푼 data.yaml 위치
+        epochs=100,                 # 학습 횟수
+        imgsz=720                  # 이미지 사이즈 (난 720으로 함)
+    )
+
+6. colab에서 runs / detect / train에 있는 best.pt 다운로드
+
+7. vscode에 best.pt 가져와서 model = YOLO("best.pt") 작성
+ - YOLO()에는 best.pt가 있는 경로를 적으면 된다.
